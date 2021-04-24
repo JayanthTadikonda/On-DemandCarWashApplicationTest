@@ -22,8 +22,8 @@ public class WasherController {
         return "washer added !";
     }
 
-    @GetMapping("/washer-login")
-    public String washerLogin(Washer washer){
-        if(washerRepository.)
-    }
+//    @GetMapping("/washer-login")
+//    public String washerLogin(Washer washer){
+//        if(washerRepository.)
+//    }
 }
