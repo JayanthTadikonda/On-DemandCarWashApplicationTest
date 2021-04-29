@@ -11,6 +11,6 @@ public interface CustomerRepository extends MongoRepository<Customer, Integer> {
 
     public List<Customer> findAll();
     public Customer findByName(String name);
-    public Customer findById();
+    public Customer findById(int id);
 
 }

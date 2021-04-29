@@ -2,7 +2,7 @@ package com.jay.SpringSecurityJWT.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collation = "customer")
+@Document(collection = "customer")
 public class User {
 
     private String username;
