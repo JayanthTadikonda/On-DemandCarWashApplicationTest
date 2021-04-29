@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
+import java.time.LocalDateTime;
 
 @Document(collection = "payments")
 @Data
@@ -12,8 +13,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Payment {
 
     private int paymentId;
+    private String customerName;
+    private String washerName;
     private String paymentStatus;
     private String transactionId;
     private int orderId;
     private double amount;
+    private LocalDateTime paymentDate;
 }

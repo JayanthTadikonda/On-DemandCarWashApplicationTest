@@ -33,9 +33,9 @@ public class CustomerController {
     }
 
     @PostMapping(value = "/add-customer", consumes = MediaType.APPLICATION_JSON_VALUE) // New Customer Registration
-    public String addCustomer(@RequestBody Customer customer){
+    public Customer addCustomer(@RequestBody Customer customer){
         customerRepository.save(customer);
-        return "Added new Customer";
+        return customer;
     }
 
     @GetMapping("/get-customer/{name}") // Get customer with name

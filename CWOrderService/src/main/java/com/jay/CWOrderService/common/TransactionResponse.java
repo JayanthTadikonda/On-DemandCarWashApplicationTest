@@ -14,4 +14,5 @@ public class TransactionResponse {
     private String transactionId;
     private double amount;
     private String message;
+    private Washer washer;
 }

@@ -1,5 +1,6 @@
 package com.jay.SpringSecurityJWT.util;
 
+import com.jay.SpringSecurityJWT.model.Customer;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -37,9 +38,13 @@ public class JwtUtil {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(UserDetails userDetails){
+    public String generateToken(Customer userDetails){
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims,userDetails.getUsername());
+//        Claims claims = Jwts.claims().setSubject(userDetails.getName());
+//        claims.put("name",userDetails.getName());
+//        claims.put("role",userDetails.getRole());
+
+        return createToken(claims,userDetails.getName());
     }
 
     private String createToken(Map<String, Object> claims, String subject){

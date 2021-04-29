@@ -15,5 +15,8 @@ public class Order {
     private String washName;
     private String carModel;
     private double amount;
+    private String customerName;
+    private int washerId;
+    private String washerName;
 
 }

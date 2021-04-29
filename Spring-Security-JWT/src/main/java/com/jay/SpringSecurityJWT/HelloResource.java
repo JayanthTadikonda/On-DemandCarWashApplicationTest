@@ -2,6 +2,8 @@ package com.jay.SpringSecurityJWT;
 
 import com.jay.SpringSecurityJWT.model.AuthenticationRequest;
 import com.jay.SpringSecurityJWT.model.AuthenticationResponse;
+import com.jay.SpringSecurityJWT.model.Customer;
+import com.jay.SpringSecurityJWT.service.MyUserDetailsService;
 import com.jay.SpringSecurityJWT.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,9 @@ public class HelloResource {
     UserDetailsService userDetailsService;
 
     @Autowired
+    MyUserDetailsService myUserDetailsService;
+
+    @Autowired
     JwtUtil jwtUtil;
 
 
@@ -40,10 +45,10 @@ public class HelloResource {
         catch (BadCredentialsException e){
             throw new Exception("Incorrect UserName or Password !",e);
         }
-        final UserDetails userDetails = userDetailsService
+        final Customer customerDetails = (Customer) myUserDetailsService
                 .loadUserByUsername(authenticationRequest.getUsername());
 
-        final String jwt = jwtUtil.generateToken(userDetails);
+        final String jwt = jwtUtil.generateToken(customerDetails);
 
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
