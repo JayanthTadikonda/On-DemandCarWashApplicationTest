@@ -7,8 +7,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class PaymentService {
@@ -34,5 +36,11 @@ public class PaymentService {
     public String paymentProcessing(){
         //3rd party api payment gateway (BrainTree)
         return new Random().nextBoolean()?"success":"payment failed, please try again !";
+    }
+
+    public List<Payment> paymentList(String name){
+        return paymentRepository.findAll()
+                .stream().filter(payment -> payment.getCustomerName().equalsIgnoreCase(name))
+                .collect(Collectors.toList());
     }
 }

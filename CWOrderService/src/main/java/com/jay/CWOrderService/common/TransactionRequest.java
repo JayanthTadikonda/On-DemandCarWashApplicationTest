@@ -13,5 +13,5 @@ import lombok.NoArgsConstructor;
 public class TransactionRequest {
 
     private Order order;
-    private Payment payment;
+    //private Payment payment;
 }

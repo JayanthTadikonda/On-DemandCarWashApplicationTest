@@ -7,6 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class OrderService {
 
@@ -29,11 +33,11 @@ public class OrderService {
         Order order = request.getOrder();
         order.setOrderId(orderId.getNextOrderId("orderId"));
         assert washer != null;
-        order.setWasherId(washer.getWasherId());
+        //order.setWasherId(washer.getWasherId());
         assert customer != null;
         order.setCarModel(customer.getCarModel());
 
-        Payment payment = request.getPayment();
+        Payment payment = new Payment();//= request.getPayment(); change to new Object
         payment.setCustomerName(customer.getName());
         payment.setWasherName(washer.getName());
         payment.setOrderId(order.getOrderId());
@@ -46,5 +50,28 @@ public class OrderService {
         assert paymentResponse != null;
         response = paymentResponse.getPaymentStatus().equalsIgnoreCase("success")?"payment Successful, Order Booked":"Sorry, payment failed !";
         return new TransactionResponse(order,paymentResponse.getTransactionId(), paymentResponse.getAmount(),response,washer);
+    }
+
+    public Order payAfterWash(Order order){
+
+        order.setOrderId(orderId.getNextOrderId("orderId"));
+        if(order.getWashName().contains("basic-wash")){
+            order.setAmount(999);
+            orderRepository.save(order);
+        }else
+            order.setAmount(555);
+            orderRepository.save(order);
+        return order;
+    }
+
+//    public Order findById(int id){
+//        return orderRepository.findAll()
+//                .stream().filter(o -> o.)
+//    }
+
+    public List<Order> getOrderListByName(String name){
+        return orderRepository.findAll()
+                .stream().filter(order -> order.getCustomerName().equalsIgnoreCase(name))
+                .collect(Collectors.toList());
     }
 }

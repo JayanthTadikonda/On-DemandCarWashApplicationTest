@@ -11,13 +11,13 @@ import org.springframework.web.client.RestTemplate;
 @EnableEurekaClient
 public class MongoDbUserCreationApplication {
 
-	@Bean
-	@LoadBalanced //identifies ms
-	public RestTemplate restTemplate(){
-		return new RestTemplate();
-	}
+    @Bean
+    @LoadBalanced //identifies ms
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 
-	public static void main(String[] args) {
-		SpringApplication.run(MongoDbUserCreationApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(MongoDbUserCreationApplication.class, args);
+    }
 }

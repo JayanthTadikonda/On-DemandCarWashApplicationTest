@@ -1,10 +1,15 @@
 package com.jay.CWWasherMicroservice.controller;
 
+import com.jay.CWWasherMicroservice.filter.JwtFilter;
+import com.jay.CWWasherMicroservice.model.AuthRequest;
 import com.jay.CWWasherMicroservice.model.Washer;
 import com.jay.CWWasherMicroservice.repository.WasherRepository;
 import com.jay.CWWasherMicroservice.service.WasherService;
+import org.springframework.security.authentication.AuthenticationManager;
+import com.jay.CWWasherMicroservice.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,39 +28,63 @@ public class WasherController {
     @Autowired
     private RestTemplate restTemplate;
 
+   @Autowired
+   private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private JwtFilter jwtFilter;
+
+
     @PostMapping(value = "/add-washer", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public String addWasher(@RequestBody Washer washer){
+    public String addWasher(@RequestBody Washer washer) {
         washerRepository.save(washer);
         return "New Washer Added !";
     }
 
     @GetMapping("/get-washer/{name}")
-    public Washer getWasherByName(@PathVariable String name){
+    public Washer getWasherByName(@PathVariable String name) {
         return washerService.findByName(name);
     }
 
     @GetMapping("/all-washers") // Shows all Washers available in the DB
-    public List<Washer> getAllWashers(){
+    public List<Washer> getAllWashers() {
         return washerRepository.findAll();
     }
 
-    @GetMapping("/wash") //Call to activate Reception of notifications from Customer
-    public String notificationTest() throws Exception{
+    @GetMapping("/receive-wash-notifications") //Call to activate Reception of notifications from Customer
+    public String notificationTest() throws Exception {
         return washerService.receiveNotification();
     }
 
     @GetMapping("/washer-choice") //Washer accepting/Rejecting received Wash-Request
-    public String acceptWash(@RequestParam ("option") Boolean option){
-        String status = null;
-        if(washerService.washRequestFromCustomer().equalsIgnoreCase("book-wash")&& option){
-            restTemplate.getForObject("http://customer-microservice/customer/confirmation",String.class);
-            washerService.sendNotification("accepted-wash-request");
-            return "Wash Booking Accepted !";
+    public String acceptWash(@RequestParam("option") Boolean option) {
+        return washerService.washerChoice(option);
+    }
+
+    @PostMapping("/authenticate")
+    public String generateToken(@RequestBody AuthRequest authRequest) throws Exception {
+        //washerService.receiveNotification();
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
+            );
+        } catch (Exception e) {
+            throw new Exception("Invalid Username or Password Entered !");
         }
-        else if(option || washerService.washRequestFromCustomer().equalsIgnoreCase("book-wash"))
-            status = "Wash Booking Rejected !";
-            restTemplate.getForObject("http://customer-microservice/customer/confirmation",String.class);
-            washerService.sendNotification("Rejected-wash-request");
-        return status;
+        return jwtUtil.generateToken(authRequest.getUsername());
+
+    }
+    @GetMapping("/test-security")
+    public String sayHelloToWasher() {
+        return "Hey there washer:"+jwtFilter.getLoggedInUserName();
+    }
+
+    @GetMapping("/wash-completed")
+    public String completedWash(){
+        washerService.sendNotification("wash-completed, proceed for payment...");
+        return "Washer has completed Washing the car!";
     }
 }
