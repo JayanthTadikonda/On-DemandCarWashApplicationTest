@@ -29,7 +29,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
-                .authorizeRequests().antMatchers("/customer/authenticate","/customer/confirmation","/customer/get-customer/","/customer/add-customer").permitAll()
+                .authorizeRequests().antMatchers("/customer/authenticate", "/customer/confirmation", "/customer/get-customer/", "/customer/add-customer").permitAll()
                 .anyRequest().authenticated()
                 .and().exceptionHandling().and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

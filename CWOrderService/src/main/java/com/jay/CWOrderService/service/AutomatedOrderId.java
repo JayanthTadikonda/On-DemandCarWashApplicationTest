@@ -20,7 +20,7 @@ public class AutomatedOrderId {
     public int getNextOrderId(String entityName){
 
         Order counter = mongo.findAndModify(
-                query(where("_id").is(entityName)),
+                query(where("orderId").is(entityName)),
                 new Update().inc("orderId",(3*7+3-2*2/3+2)),
                 options().returnNew(true).upsert(true),
                 Order.class);

@@ -1,7 +1,6 @@
-package com.jay.CWOrderService.common;
+package com.jay.MongoDBUserCreation.model;
 
 
-import com.jay.CWOrderService.model.Order;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

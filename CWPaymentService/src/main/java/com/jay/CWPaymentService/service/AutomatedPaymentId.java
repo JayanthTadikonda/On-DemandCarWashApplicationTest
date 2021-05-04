@@ -16,11 +16,11 @@ public class AutomatedPaymentId {
     @Autowired
     private MongoOperations mongo;
 
-    public int getNextPaymentId(String entityName){
+    public int getNextPaymentId(String entityName) {
 
         Payment counter = mongo.findAndModify(
                 query(where("_id").is(entityName)),
-                new Update().inc("paymentId",1),
+                new Update().inc("paymentId", 1),
                 options().returnNew(true).upsert(true),
                 Payment.class);
         assert counter != null;

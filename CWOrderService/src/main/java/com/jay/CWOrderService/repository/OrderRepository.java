@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface OrderRepository extends MongoRepository<Order, Integer>{
+public interface OrderRepository extends MongoRepository<Order, Integer> {
 
 }

@@ -28,8 +28,8 @@ public class WasherController {
     @Autowired
     private RestTemplate restTemplate;
 
-   @Autowired
-   private AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -66,7 +66,6 @@ public class WasherController {
 
     @PostMapping("/authenticate")
     public String generateToken(@RequestBody AuthRequest authRequest) throws Exception {
-        //washerService.receiveNotification();
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
@@ -75,15 +74,15 @@ public class WasherController {
             throw new Exception("Invalid Username or Password Entered !");
         }
         return jwtUtil.generateToken(authRequest.getUsername());
-
     }
+
     @GetMapping("/test-security")
     public String sayHelloToWasher() {
-        return "Hey there washer:"+jwtFilter.getLoggedInUserName();
+        return "Hey there washer:" + jwtFilter.getLoggedInUserName();
     }
 
     @GetMapping("/wash-completed")
-    public String completedWash(){
+    public String completedWash() {
         washerService.sendNotification("wash-completed, proceed for payment...");
         return "Washer has completed Washing the car!";
     }

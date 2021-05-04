@@ -1,4 +1,4 @@
-package com.jay.MongoDBUserCreation.model;
+package com.jay.CWPaymentService.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

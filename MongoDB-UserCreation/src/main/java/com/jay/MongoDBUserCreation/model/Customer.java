@@ -18,6 +18,5 @@ public class Customer {
     private String password;
     private List<String> address;
     private String carModel;
-    private Order order;
 
 }

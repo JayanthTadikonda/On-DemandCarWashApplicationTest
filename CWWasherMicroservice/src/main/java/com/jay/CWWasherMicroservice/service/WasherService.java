@@ -1,6 +1,7 @@
 package com.jay.CWWasherMicroservice.service;
 
 import com.jay.CWWasherMicroservice.filter.JwtFilter;
+import com.jay.CWWasherMicroservice.model.AuthRequest;
 import com.jay.CWWasherMicroservice.model.Washer;
 import com.jay.CWWasherMicroservice.repository.WasherRepository;
 import com.jay.CWWasherMicroservice.util.JwtUtil;
@@ -9,6 +10,8 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,7 +23,6 @@ import java.util.Random;
 public class WasherService {
 
     private static final String request = "request-booking";
-    //private static final String EXCHANGE_NAME = "logs";
     private static final String booking = "booking-queue";
 
     @Autowired
@@ -34,6 +36,9 @@ public class WasherService {
 
     @Autowired
     private JwtFilter jwtFilter;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     String copyMsg = ""; //notification received from the customer
 
@@ -90,16 +95,12 @@ public class WasherService {
                 .findAny().orElse(null);
     }
 
-    public String washerChoice(Boolean option){
+    public String washerChoice(Boolean option) {
         String status = null;
         if (washRequestFromCustomer().contains("book-wash") && option) {
-            //restTemplate.getForObject("http://customer-microservice/customer/confirmation", String.class);
-            sendNotification("accepted-wash-request by Washer Partner:\n" + jwtFilter.getLoggedInUserName());
+            sendNotification("accepted-wash-request by Washer Partner:" + jwtFilter.getLoggedInUserName());
             return "Wash Booking Accepted !";
-        } else if (option ||washRequestFromCustomer().contains("book-wash"))
-            status = "Wash Booking Rejected !";
-            //restTemplate.getForObject("http://customer-microservice/customer/confirmation", String.class);
-            sendNotification("Rejected-wash-request by Washer Partner:\n" + jwtFilter.getLoggedInUserName());
-        return status;
+        } else
+            return "Wash Booking Rejected !, Try again ";
     }
 }
