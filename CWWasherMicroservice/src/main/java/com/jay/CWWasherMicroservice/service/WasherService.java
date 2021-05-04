@@ -96,10 +96,9 @@ public class WasherService {
     }
 
     public String washerChoice(Boolean option) {
-        String status = null;
         if (washRequestFromCustomer().contains("book-wash") && option) {
             sendNotification("accepted-wash-request by Washer Partner:" + jwtFilter.getLoggedInUserName());
-            return "Wash Booking Accepted !";
+            return "Wash Booking Accepted for Customer: " + washRequestFromCustomer().substring(22);
         } else
             return "Wash Booking Rejected !, Try again ";
     }

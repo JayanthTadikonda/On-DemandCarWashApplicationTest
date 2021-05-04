@@ -37,7 +37,7 @@ public class PaymentService {
         dtf.format(currentTime);
         Payment payment = request.getPayment();
         Order order = request.getOrder();
-        payment.setPaymentId(random.nextInt(4));
+        payment.setPaymentId(random.nextInt(9999));
         payment.setPaymentStatus(paymentProcessing());
         payment.setTransactionId(UUID.randomUUID().toString());
         payment.setPaymentDate(currentTime);

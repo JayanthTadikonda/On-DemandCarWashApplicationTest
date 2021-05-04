@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaymentResponse {
+public class OrderResponse {
 
-    private Payment payment;
+    private Order order;
     private String status;
 }

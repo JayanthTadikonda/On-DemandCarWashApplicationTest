@@ -53,7 +53,7 @@ public class OrderService {
     public Order payAfterWash(Order order) {
 
         Random random = new Random();
-        order.setOrderId(random.nextInt(4));
+        order.setOrderId(random.nextInt(9999));
         order.setPaymentStatus("Pending");
 
         if (order.getWashName().contains("basic-wash")) {

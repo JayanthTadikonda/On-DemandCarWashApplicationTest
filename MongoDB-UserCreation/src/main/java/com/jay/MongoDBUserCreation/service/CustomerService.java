@@ -13,7 +13,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -86,7 +85,7 @@ public class CustomerService {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-        return "Wash Request Sent";
+        return "Wash Request Sent, By: " + customerRepository.findByName(jwtFilter.getLoggedInUserName()).toString();
     }
 
     public String receiveNotification() throws Exception {
@@ -120,7 +119,8 @@ public class CustomerService {
         return restTemplate.postForObject("http://payment-microservice/payment/pay", request, TransactionResponse.class);
     }
 
-    public TransactionResponse payAfterWash() {
+    public TransactionResponse payAfterWash() throws Exception {
+
         Payment payment = new Payment();
         Customer customer = customerRepository.findByName(jwtFilter.getLoggedInUserName());
 
@@ -158,37 +158,43 @@ public class CustomerService {
         }
 
         List<Integer> orderId_paymentList = paymentList.stream().map(Payment::getOrderId).collect(Collectors.toList());
-
-        assert orderList != null;
-        for (Order o : orderList) {
-            //Condition for FIRST-TIME payment
-            if (!orderId_paymentList.contains(o.getOrderId())) {
-                //Do 1st Time payment
-                return doPay(o);
-            } else if (!orderId_paymentList.contains(o.getOrderId()) && o.getPaymentStatus().contains("pending")) {
-                return doPay(o);
+        //if (washBookingResponseFromWasher().contains("wash-completed")) {
+        String washStatus = receiveNotification();
+            assert orderList != null;
+            for (Order o : orderList) {
+                //Condition for FIRST-TIME payment
+                if (!orderId_paymentList.contains(o.getOrderId())) {
+                    //Do 1st Time payment
+                    return doPay(o);
+                } else if (!orderId_paymentList.contains(o.getOrderId()) && o.getPaymentStatus().contains("pending")) {
+                    return doPay(o);
+                }
             }
-        }
-        return new TransactionResponse(finalResponse.getOrder(), finalResponse.getTransactionId(), finalResponse.getAmount(), "All Payments Successful, Nothing Pending Payments");
+        return new TransactionResponse(finalResponse.getOrder(), finalResponse.getTransactionId(), finalResponse.getAmount(), "All Payments Successful, No Pending Payments");
     }
 
-    public Order placeOrder() {
+    public OrderResponse placeOrder()throws Exception{
         Order placedOrder = null;
-        String resp = washBookingResponseFromWasher();
+        String resp = receiveNotification();
 
-        if (resp.contains("accepted-wash-request")) {
+        if (resp.contains("accepted-wash-request") ) {
+            resp = washBookingResponseFromWasher();
             Customer customer = customerRepository.findByName(jwtFilter.getLoggedInUserName());
             Order order = new Order();
             order.setCustomerName(jwtFilter.getLoggedInUserName());
             order.setCarModel(customer.getCarModel());
-            order.setWasherName(resp.substring(41));
+            order.setWasherName(resp.substring(40));
             order.setWashName("basic-wash");
             order.setDate(new Date(System.currentTimeMillis()));
             placedOrder = restTemplate.postForObject("http://order-microservice/order/place-order", order, Order.class);
-            //System.out.println(placedOrder.toString());
+            sendNotification("Order placed at: " + order.getDate() +"with Washer Partner: " + order.getWasherName());
+            String orderstats = restTemplate.getForObject("http://washer-microservice/washer/order-accepted", String.class);
+            System.out.println(orderstats);
+
         } else
-            System.out.println("Washer rejected the request, please try again.");
-        return placedOrder;
+           return new OrderResponse(placedOrder,"Order is already Placed !");
+
+        return new OrderResponse(placedOrder, "Order for Wash is placed with Washer Partner");
     }
 
 }

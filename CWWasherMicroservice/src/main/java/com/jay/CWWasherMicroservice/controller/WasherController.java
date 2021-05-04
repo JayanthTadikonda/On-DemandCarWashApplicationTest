@@ -81,9 +81,17 @@ public class WasherController {
         return "Hey there washer:" + jwtFilter.getLoggedInUserName();
     }
 
+    @GetMapping("/order-accepted")
+    public String orderAccepted(){
+            washerService.sendNotification("Order-Placed");
+        return "Order Placed with washer Partner:" + jwtFilter.getLoggedInUserName();
+    }
+
     @GetMapping("/wash-completed")
     public String completedWash() {
-        washerService.sendNotification("wash-completed, proceed for payment...");
-        return "Washer has completed Washing the car!";
+        if(washerService.washRequestFromCustomer().contains("Order-placed")) {
+            washerService.sendNotification("wash-completed, proceed for payment...");
+        }
+        return "Washer Partner served the request: "+ washerService.washRequestFromCustomer();
     }
 }

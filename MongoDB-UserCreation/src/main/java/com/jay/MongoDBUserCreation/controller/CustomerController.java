@@ -5,11 +5,14 @@ import com.jay.MongoDBUserCreation.model.*;
 import com.jay.MongoDBUserCreation.repository.CustomerRepository;
 import com.jay.MongoDBUserCreation.service.CustomerService;
 import com.jay.MongoDBUserCreation.util.JwtUtil;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -31,6 +34,12 @@ public class CustomerController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @ApiOperation(value = "This method is used to get the clients.")
+    @GetMapping
+    public List<String> getClients() {
+        return Arrays.asList("First Client", "Second Client");
+    }
+
     @GetMapping("/schedule-wash")
     public String scheduleWash() {
         return null;
@@ -46,12 +55,12 @@ public class CustomerController {
     }
 
     @GetMapping("/continue") //Proceed to create an ORDER for the Wash
-    public Order placeOrderForAcceptedWashRequest() throws Exception {
+    public OrderResponse placeOrderForAcceptedWashRequest() throws Exception {
         return customerService.placeOrder();
     }
 
     @GetMapping("/pay") // Pay after the wash is completed.
-    public TransactionResponse doPayment() {
+    public TransactionResponse doPayment() throws Exception {
         return customerService.payAfterWash();
     }
 
