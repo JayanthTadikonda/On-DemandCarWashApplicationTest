@@ -1,7 +1,10 @@
 package com.jay.MongoDBUserCreation.controller;
 
 import com.jay.MongoDBUserCreation.filter.JwtFilter;
-import com.jay.MongoDBUserCreation.model.*;
+import com.jay.MongoDBUserCreation.model.AuthRequest;
+import com.jay.MongoDBUserCreation.model.Customer;
+import com.jay.MongoDBUserCreation.model.OrderResponse;
+import com.jay.MongoDBUserCreation.model.TransactionResponse;
 import com.jay.MongoDBUserCreation.repository.CustomerRepository;
 import com.jay.MongoDBUserCreation.service.CustomerService;
 import com.jay.MongoDBUserCreation.util.JwtUtil;
@@ -12,6 +15,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,12 +45,14 @@ public class CustomerController {
         return Arrays.asList("First Client", "Second Client");
     }
 
-    @GetMapping("/schedule-wash")
-    public String scheduleWash() {
-        return null;
+    @GetMapping("/schedule-wash/{date}")
+    public String scheduleWash(@PathVariable LocalDate date)throws Exception {
+        String sent = customerService.sendNotification("Requesting for Scheduling wash at: "+ date.format(DateTimeFormatter.BASIC_ISO_DATE) + "By customer: " + jwtFilter.getLoggedInUserName());
+        String resp = customerService.receiveNotification();
+        return sent;
     }
 
-    @GetMapping("/book-wash") //Wash Service Booking
+    @GetMapping("/wash-now") //Wash Service Booking
     public String bookWash() throws Exception {
 
         String sent = customerService.sendNotification("book-wash" + "By customer: " + jwtFilter.getLoggedInUserName());
